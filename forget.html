@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forgot Password</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #ececec, #d4d4d4);
+    overflow: hidden;
+}
+
+/* SAME ABSTRACT BACKGROUND SQUARES AS LOGIN */
+.bg-squares div {
+    position: absolute;
+    background: #14283a;
+    width: 140px;
+    height: 140px;
+    transform: rotate(45deg);
+    opacity: 0.95;
+    animation: floatAnim 8s infinite ease-in-out alternate;
+    box-shadow: 8px 8px 20px rgba(0,0,0,0.4);
+}
+.bg-squares .light {
+    background: #ebebeb;
+}
+
+.s1 { top: 5%; right: 12%; }
+.s2 { top: 30%; right: -4%; width: 110px; height: 110px; }
+.s3 { top: 60%; right: 10%; width: 90px; height: 90px; }
+.s4 { top: 20%; right: 30%; width: 100px; height: 100px; }
+.s5 { top: 70%; right: 28%; width: 70px; height: 70px; }
+
+@keyframes floatAnim {
+    0% { transform: rotate(45deg) translateY(0); }
+    100% { transform: rotate(45deg) translateY(25px); }
+}
+
+/* MAIN BOX */
+.container {
+    width: 380px;
+    background: #ffffffd9;
+    padding: 28px;
+    border-radius: 18px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    z-index: 5;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #14283a;
+    font-weight: bold;
+}
+
+/* INPUTS */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #bfc8cf;
+    background: #f8fafa;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #14283a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin-top: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #0d1b28;
+}
+
+.resend-btn {
+    background: #ffca28;
+    color: black;
+}
+
+/* SMALL TEXT */
+.note {
+    font-size: 13px;
+    color: #14283a;
+    margin-top: 5px;
+}
+
+.error {
+    color: red;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.success {
+    color: green;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg-squares">
+    <div class="s1"></div>
+    <div class="s2"></div>
+    <div class="s3"></div>
+    <div class="s4 light"></div>
+    <div class="s5 light"></div>
+</div>
+
+<div class="container">
+
+    <h2>Forgot Password</h2>
+
+    <!-- STEP 1: ENTER EMAIL -->
+    <div id="step1">
+        <input type="email" id="email" placeholder="Enter your Gmail" />
+        <div id="emailMsg" class="error hidden"></div>
+        <button onclick="sendOTP()">Send OTP</button>
+        <p class="note">You will receive a 6-digit OTP (simulated).</p>
+    </div>
+
+    <!-- STEP 2: OTP VERIFY -->
+    <div id="step2" class="hidden">
+        <input type="text" id="otpInput" placeholder="Enter OTP" />
+        <div id="otpMsg" class="error hidden"></div>
+        <button onclick="verifyOTP()">Verify OTP</button>
+        <button class="resend-btn" id="resendBtn" onclick="resendOTP()" disabled>
+            Resend OTP (<span id="time">30</span>s)
+        </button>
+    </div>
+
+    <!-- STEP 3: RESET PASSWORD -->
+    <div id="step3" class="hidden">
+        <input type="password" id="newPass" placeholder="New Password" />
+        <input type="password" id="confirmPass" placeholder="Confirm Password" />
+        <div id="passMsg" class="error hidden"></div>
+        <button onclick="updatePass()">Update Password</button>
+        <div id="doneMsg" class="success hidden"></div>
+    </div>
+
+</div>
+
+<script>
+let OTP = "";
+let timer = 30;
+let countdown;
+
+/* SEND OTP */
+function sendOTP() {
+    const email = document.getElementById("email").value.trim();
+    const msg = document.getElementById("emailMsg");
+
+    if (!email) {
+        msg.textContent = "Enter your registered email.";
+        msg.classList.remove("hidden");
+        return;
+    }
+
+    msg.classList.add("hidden");
+
+    OTP = Math.floor(100000 + Math.random() * 900000).toString();
+    alert("Simulated OTP sent: " + OTP);
+
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.remove("hidden");
+
+    startTimer();
+}
+
+/* VERIFY OTP */
+function verifyOTP() {
+    const entered = document.getElementById("otpInput").value.trim();
+    const msg = document.getElementById("otpMsg");
+
+    if (entered !== OTP) {
+        msg.textContent = "Incorrect OTP!";
+        msg.classList.remove("hidden");
+        return;
+    }
+
+    msg.classList.add("hidden");
+
+    document.getElementById("step2").classList.add("hidden");
+    document.getElementById("step3").classList.remove("hidden");
+}
+
+/* RESEND OTP */
+function resendOTP() {
+    OTP = Math.floor(100000 + Math.random() * 900000).toString();
+    alert("New OTP sent: " + OTP);
+    startTimer();
+}
+
+/* TIMER */
+function startTimer() {
+    timer = 30;
+    document.getElementById("resendBtn").disabled = true;
+
+    countdown = setInterval(() => {
+        timer--;
+        document.getElementById("time").textContent = timer;
+
+        if (timer <= 0) {
+            clearInterval(countdown);
+            document.getElementById("resendBtn").disabled = false;
+        }
+    }, 1000);
+}
+
+/* UPDATE PASSWORD */
+function updatePass() {
+    const p1 = document.getElementById("newPass").value.trim();
+    const p2 = document.getElementById("confirmPass").value.trim();
+    const msg = document.getElementById("passMsg");
+
+    if (p1.length < 6) {
+        msg.textContent = "Password must be at least 6 characters.";
+        msg.classList.remove("hidden");
+        return;
+    }
+
+    if (p1 !== p2) {
+        msg.textContent = "Passwords do not match.";
+        msg.classList.remove("hidden");
+        return;
+    }
+
+    msg.classList.add("hidden");
+
+    const done = document.getElementById("doneMsg");
+    done.textContent = "Password Updated! Redirecting...";
+    done.classList.remove("hidden");
+
+    setTimeout(() => {
+        window.location.href = "login.html";
+    }, 1200);
+}
+</script>
+
+</body>
+</html>
