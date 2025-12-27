@@ -20,7 +20,7 @@ if ($type === "student") {
         $_SESSION['student_id'] = $user['id'];
         $_SESSION['student_name'] = $user['username'];
 
-        header("Location: student.html");
+        header("Location: student_dashboard.php");
         exit;
     } else {
         echo "<script>alert('Invalid Student Login'); window.location='login.html';</script>";
@@ -34,7 +34,7 @@ if ($type === "student") {
 
     if ($admin) {
         $_SESSION['admin_id'] = $admin['id'];
-        header("Location: admin.html");
+        header("Location: admin_dashboard.php");
         exit;
     } else {
         echo "<script>alert('Invalid Admin Login'); window.location='login.html';</script>";
